@@ -34,6 +34,6 @@ object DataFrame5 extends App{
   val dfmins = df2.groupBy("Year").min()
 
   dfmins.select($"Year",$"min(Close)").show()
-
+  sparkSession.stop()
 
 }

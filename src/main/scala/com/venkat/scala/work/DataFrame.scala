@@ -32,4 +32,6 @@ object DataFrame extends App{
     println(row);
   }
 
+  sparkSession.stop()
+
 }

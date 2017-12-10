@@ -36,4 +36,6 @@ object DataFrame2 extends App{
   val clHigh = df.filter($"Close" < 480 && $"High" < 480).collect()
 
   //df.filter("Close < 480 AND High < 480").show()//sql notation, here show is the action
+
+  sparkSession.stop()
 }

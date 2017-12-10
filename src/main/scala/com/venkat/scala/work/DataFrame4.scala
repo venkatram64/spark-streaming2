@@ -32,5 +32,7 @@ object DataFrame4 extends App{
 
   df.describe().show() //shows count ,mean, stddev, min and max
 
+  sparkSession.stop()
+
 
 }

@@ -31,4 +31,6 @@ object DataFrame3 extends App{
   df.select(variance("Sales")).show()
   df.select(stddev("Sales")).show()
   df.select(collect_set("Sales")).show()
+
+  sparkSession.stop()
 }

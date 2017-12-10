@@ -68,4 +68,6 @@ object Dataframe2 extends App{
 
   trainingSummary.predictions.show()
 
+  sparkSession.stop()
+
 }
