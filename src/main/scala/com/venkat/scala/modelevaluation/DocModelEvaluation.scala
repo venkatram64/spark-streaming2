@@ -38,4 +38,6 @@ object DocModelEvaluation extends App{
   model.transform(test).select("features","label","prediction").show()
 
   //model.bestModel
+
+  sparkSession.stop()
 }
