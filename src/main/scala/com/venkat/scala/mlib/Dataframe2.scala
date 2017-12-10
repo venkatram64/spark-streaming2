@@ -24,7 +24,7 @@ object Dataframe2 extends App{
   //data.head(1)
 
   /*val colnames = data.columns
-  val firstrow = datahead(1)(0)
+  val firstrow = data.head(1)(0)
   println("\n")
   println("Example Data Row")
 
@@ -52,5 +52,20 @@ object Dataframe2 extends App{
   val output = assembler.transform(df).select($"label", $"features")
 
   output.show()
+
+  val lr = new LinearRegression()
+  val lrModel = lr.fit(output)
+
+  val trainingSummary = lrModel.summary
+
+  println(s"numIterations: ${trainingSummary.totalIterations}")
+  println(s"objectiveHistory: ${trainingSummary.objectiveHistory.toList}")
+  trainingSummary.residuals.show()
+
+  println(s"RMSE: ${trainingSummary.rootMeanSquaredError}")
+  println(s"MSE: ${trainingSummary.meanSquaredError}")
+  println(s"r2: ${trainingSummary.r2}")
+
+  trainingSummary.predictions.show()
 
 }
