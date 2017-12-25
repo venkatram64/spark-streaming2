@@ -5,6 +5,7 @@ import org.apache.spark.ml.classification.RandomForestClassifier
 import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
 import org.apache.spark.ml.feature.{OneHotEncoder, StringIndexer, VectorAssembler}
 import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.functions._
 
 /**
   * Created by Venkatram on 12/25/2017.
@@ -100,7 +101,7 @@ object RainfallProcess extends App{
 
   predictions.printSchema()
 
-  val predictionAndLabels = predictions.select($"prediction", $"label")
+  val predictionAndLabels = predictions.select($"prediction", $"label",$"probability")
   predictionAndLabels.show()
 
   val evaluator = new MulticlassClassificationEvaluator()
@@ -108,9 +109,33 @@ object RainfallProcess extends App{
     .setPredictionCol("prediction")
     .setMetricName("accuracy")
 
+  evaluator.explainParams()
+
   println("Evaluator ")
 
   println(evaluator.evaluate(predictionAndLabels) )
+
+  val total = predictionAndLabels.count()
+  val correct = predictionAndLabels.filter($"label" === $"prediction").count()
+  val wrong = predictionAndLabels.filter(not($"label" === $"prediction")).count()
+  val ratioWrong = wrong.toDouble / total.toDouble
+  val tatioCorrect = correct.toDouble / total.toDouble
+
+
+  val truep = predictionAndLabels.filter($"prediction" === 0.0).filter($"label" === $"prediction").count() / total.toDouble
+  val truen = predictionAndLabels.filter($"prediction" === 1.0).filter($"label" === $"prediction").count() / total.toDouble
+  val falsep = predictionAndLabels.filter($"prediction" === 1.0).filter(not($"label" === $"prediction")).count() / total.toDouble
+  val falsen = predictionAndLabels.filter($"prediction" === 0.0).filter(not($"label" === $"prediction")).count() / total.toDouble
+
+  println("counttotal : " + total)
+  println("correct : " + correct)
+  println("wrong: " + wrong)
+  println("ratio wrong: " + ratioWrong)
+  println("ratio correct: " + tatioCorrect)
+  println("ratio true positive : " + truep)
+  println("ratio false positive : " + falsep)
+  println("ratio true negative : " + truen)
+  println("ratio false negative : " + falsen)
 
   sparkSession.stop()
 
