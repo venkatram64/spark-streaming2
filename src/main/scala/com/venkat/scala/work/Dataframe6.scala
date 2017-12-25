@@ -10,8 +10,7 @@ import org.apache.spark.sql.functions._
 /**
   * Created by Venkatram on 12/25/2017.
   */
-object RainfallProcess extends App{
-
+object Dataframe6 extends App{
   val sparkSession = SparkSession
     .builder()
     .master("local")
@@ -37,6 +36,14 @@ object RainfallProcess extends App{
 
 
 
+  /*  val logregDataAll = data.select($"RainTomorrow",
+      $"MinTemp",$"MaxTemp", $"Rainfall", $"Evaporation", $"Sunshine", $"WindGustDir", $"WindGustSpeed",
+      $"WindDir9am",$"WindDir3pm",$"WindSpeed9am", $"WindSpeed3pm", $"Humidity9am", $"Humidity3pm", $"Pressure9am", $"Pressure3pm",
+      $"Cloud9am",$"Cloud3pm",$"Temp9am", $"Temp3pm", $"RainToday", $"RISK_MM"
+    )*/
+
+  val rainfallData = data.withColumn("Date", unix_timestamp($"Date"))
+
   val logregDataAll = data.select($"RainTomorrow",
     $"MinTemp",$"MaxTemp", $"Rainfall", $"Evaporation", $"Sunshine",  $"WindGustDir",$"WindGustSpeed",
     $"WindDir9am",$"WindDir3pm",$"WindSpeed9am", $"WindSpeed3pm", $"Humidity9am", $"Humidity3pm", $"Pressure9am", $"Pressure3pm",
@@ -52,6 +59,18 @@ object RainfallProcess extends App{
   val rainTomorrowIndexer = new StringIndexer().setInputCol("RainTomorrow").setOutputCol("label")
   val rainTomorrowEncoder = new OneHotEncoder().setInputCol("label").setOutputCol("RainTomorrowVec")
 
+  /* val windGustDirIndexer = new StringIndexer().setInputCol("WindGustDir").setOutputCol("WindGustDirIndex")
+   val windGustDirEncoder = new OneHotEncoder().setInputCol("WindGustDirIndex").setOutputCol("WindGustDirVec")*/
+
+
+  val rainTodayIndexer = new StringIndexer().setInputCol("RainToday").setOutputCol("RainTodayIndex")
+  val rainTodayEncoder = new OneHotEncoder().setInputCol("RainTodayIndex").setOutputCol("RainTodayVec")
+
+  /* val windDir9amIndexer = new StringIndexer().setInputCol("WindDir9am").setOutputCol("WindDir9amIndex")
+   val windDir9amEncoder = new OneHotEncoder().setInputCol("WindDir9amIndex").setOutputCol("WindDir9amVec")
+
+   val windDir3pmIndexer = new StringIndexer().setInputCol("WindDir3pm").setOutputCol("WindDir3pmIndex")
+   val windDir3pmEncoder = new OneHotEncoder().setInputCol("WindDir3pmIndex").setOutputCol("WindDir3pmVec")*/
 
   val assembler = new VectorAssembler().
     setInputCols(Array("MinTemp","MaxTemp","Rainfall","Evaporation","Sunshine",
@@ -72,6 +91,9 @@ object RainfallProcess extends App{
     .setImpurity("gini")
     .setMaxDepth(3)
     .setNumTrees(10)
+
+  /*  val pipeline = new Pipeline().setStages(Array(windGustDirIndexer,windDir9amIndexer,windDir3pmIndexer,rainTodayIndexer,
+      rainTomorrowIndexer,windGustDirEncoder,windDir9amEncoder,windDir3pmEncoder,rainTodayEncoder,rainTomorrowEncoder,assembler,rf))*/
 
   val pipeline = new Pipeline().setStages(Array(rainTomorrowIndexer, rainTomorrowEncoder,assembler,rf))
 
@@ -108,7 +130,7 @@ object RainfallProcess extends App{
   val falsep = predictionAndLabels.filter($"prediction" === 1.0).filter(not($"label" === $"prediction")).count() / total.toDouble
   val falsen = predictionAndLabels.filter($"prediction" === 0.0).filter(not($"label" === $"prediction")).count() / total.toDouble
 
-  println("total : " + total)
+  println("counttotal : " + total)
   println("correct : " + correct)
   println("wrong: " + wrong)
   println("ratio wrong: " + ratioWrong)
@@ -119,5 +141,4 @@ object RainfallProcess extends App{
   println("ratio false negative : " + falsen)
 
   sparkSession.stop()
-
 }
