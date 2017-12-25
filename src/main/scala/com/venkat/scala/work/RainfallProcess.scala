@@ -35,16 +35,11 @@ object RainfallProcess extends App{
 
   import sparkSession.implicits._
 
-
-
   val logregDataAll = data.select($"RainTomorrow",
-    $"MinTemp",$"MaxTemp", $"Rainfall", $"Evaporation", $"Sunshine",  $"WindGustDir",$"WindGustSpeed",
-    $"WindDir9am",$"WindDir3pm",$"WindSpeed9am", $"WindSpeed3pm", $"Humidity9am", $"Humidity3pm", $"Pressure9am", $"Pressure3pm",
-    $"Cloud9am",$"Cloud3pm",$"Temp9am", $"Temp3pm",  $"RISK_MM"
+    $"MinTemp",$"MaxTemp", $"Rainfall", $"Evaporation", $"Sunshine",$"WindGustSpeed",
+    $"WindDir9am",$"WindDir3pm",$"WindSpeed9am", $"WindSpeed3pm",$"Humidity9am",$"Humidity3pm",
+    $"Pressure9am", $"Pressure3pm", $"Cloud9am",$"Cloud3pm",$"Temp9am", $"Temp3pm",  $"RISK_MM"
   )
-
-
-
 
   val logregData = logregDataAll.na.drop()
 
@@ -54,9 +49,9 @@ object RainfallProcess extends App{
 
 
   val assembler = new VectorAssembler().
-    setInputCols(Array("MinTemp","MaxTemp","Rainfall","Evaporation","Sunshine",
-      "WindGustSpeed","WindSpeed9am","WindSpeed3pm","Humidity9am","Humidity3pm","Pressure9am",
-      "Pressure3pm","Cloud9am","WindSpeed9am","Cloud3pm","Temp9am","Temp3pm","RISK_MM"))
+    setInputCols(Array("MinTemp","MaxTemp","Rainfall","Evaporation","Sunshine","WindGustSpeed",
+      "WindSpeed9am","WindSpeed3pm","Humidity9am","Humidity3pm","Pressure9am",
+      "Pressure3pm","Cloud9am","Cloud3pm","Temp9am","Temp3pm","RISK_MM"))
     .setOutputCol("features")
 
 

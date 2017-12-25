@@ -44,12 +44,11 @@ object Dataframe6 extends App{
 
   val rainfallData = data.withColumn("Date", unix_timestamp($"Date"))
 
-  val logregDataAll = data.select($"RainTomorrow",
-    $"MinTemp",$"MaxTemp", $"Rainfall", $"Evaporation", $"Sunshine",  $"WindGustDir",$"WindGustSpeed",
-    $"WindDir9am",$"WindDir3pm",$"WindSpeed9am", $"WindSpeed3pm", $"Humidity9am", $"Humidity3pm", $"Pressure9am", $"Pressure3pm",
+  val logregDataAll = rainfallData.select($"RainTomorrow",
+    $"Date",$"MinTemp",$"MaxTemp", $"Rainfall", $"Evaporation", $"Sunshine",$"WindGustSpeed",
+    $"WindSpeed9am", $"WindSpeed3pm", $"Humidity9am", $"Humidity3pm", $"Pressure9am", $"Pressure3pm",
     $"Cloud9am",$"Cloud3pm",$"Temp9am", $"Temp3pm",  $"RISK_MM"
   )
-
 
 
 
@@ -72,10 +71,11 @@ object Dataframe6 extends App{
    val windDir3pmIndexer = new StringIndexer().setInputCol("WindDir3pm").setOutputCol("WindDir3pmIndex")
    val windDir3pmEncoder = new OneHotEncoder().setInputCol("WindDir3pmIndex").setOutputCol("WindDir3pmVec")*/
 
+
   val assembler = new VectorAssembler().
-    setInputCols(Array("MinTemp","MaxTemp","Rainfall","Evaporation","Sunshine",
+    setInputCols(Array("Date","MinTemp","MaxTemp","Rainfall","Evaporation","Sunshine",
       "WindGustSpeed","WindSpeed9am","WindSpeed3pm","Humidity9am","Humidity3pm","Pressure9am",
-      "Pressure3pm","Cloud9am","WindSpeed9am","Cloud3pm","Temp9am","Temp3pm","RISK_MM"))
+      "Pressure3pm","Cloud9am","Cloud3pm","Temp9am","Temp3pm","RISK_MM"))
     .setOutputCol("features")
 
 
