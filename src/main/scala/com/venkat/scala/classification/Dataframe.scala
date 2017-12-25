@@ -19,11 +19,16 @@ object Dataframe extends App{
   //show schema
   training.printSchema()
 
+
   val lr = new LogisticRegression().setMaxIter(10)
               .setRegParam(0.3)
                 .setElasticNetParam(0.8)
 
   val lrModel = lr.fit(training)
+
+  lrModel.summary.predictions.show()
+
+  //println(s"Summary: ${lrModel.summary.predictions.show()}")
 
   println(s"Coefficients: ${lrModel.coefficientMatrix} Intercept: ${lrModel.intercept}")
 

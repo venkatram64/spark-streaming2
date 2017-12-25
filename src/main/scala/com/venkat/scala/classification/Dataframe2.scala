@@ -7,7 +7,8 @@ import org.apache.spark.ml.feature.{OneHotEncoder, StringIndexer, VectorAssemble
 import org.apache.spark.ml.linalg.Vectors
 //import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
 import org.apache.spark.mllib.evaluation.MulticlassMetrics
-
+//https://www.youtube.com/watch?v=dMLaAqsfwvc&list=PLUgZaFoyJafgGFF6mev1Kt2XL2V1uT1R3
+//https://www.youtube.com/watch?v=dMLaAqsfwvc&list=PLUgZaFoyJafgGFF6mev1Kt2XL2V1uT1R3
 /**
   * Created by Venkatram on 12/10/2017.
   */
@@ -53,7 +54,9 @@ object Dataframe2 extends App{
   val embarkEncoder = new OneHotEncoder().setInputCol("EmbarkIndex").setOutputCol("EmbarkVec")
 
   //(label, features)
-  val assembler = new VectorAssembler().setInputCols(Array("Pclass","SexVec","Age","SibSp","Parch","Fare","EmbarkVec")).setOutputCol("features")
+  val assembler = new VectorAssembler().
+    setInputCols(Array("Pclass","SexVec","Age","SibSp","Parch","Fare","EmbarkVec"))
+    .setOutputCol("features")
 
   val Array(training, test) = logregData.randomSplit(Array(0.7, 0.3), seed=12345)
 
@@ -65,12 +68,17 @@ object Dataframe2 extends App{
 
   val results = model.transform(test)
 
+  results.printSchema()
+
   //Model Evaluation
+  //results.show()
   val predictionAndLabels = results.select($"prediction", $"label").as[(Double, Double)].rdd
 
   val metrics = new MulticlassMetrics(predictionAndLabels)
 
   println("Confusion matrix: ")
+  metrics.labels.map(println)
+
 
   println(metrics.confusionMatrix)
 

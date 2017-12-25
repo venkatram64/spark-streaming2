@@ -6,6 +6,13 @@ import org.apache.spark.ml.regression.LinearRegression
 /**
   * Created by Venkatram on 12/10/2017.
   */
+
+//https://www.youtube.com/watch?v=zyd8jHqlC1s&index=4&list=PLUgZaFoyJafgGFF6mev1Kt2XL2V1uT1R3
+
+//https://www.youtube.com/watch?v=S_3BblVHIXM&list=PLUgZaFoyJafh3asTi7aGCvI6LDeLne-NW    //logistic
+
+//https://www.youtube.com/channel/UC2XO4HDxzfMOZIV1l795g1Q
+
 object Dataframe3 extends App{
 
   val sparkSession = SparkSession
