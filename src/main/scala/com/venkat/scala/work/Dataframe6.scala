@@ -14,12 +14,12 @@ object Dataframe6 extends App{
   val sparkSession = SparkSession
     .builder()
     .master("local")
-    .appName("RainfallProcess")
+    .appName("Dataframe6")
     .getOrCreate()
 
   val data = sparkSession.read.option("header", "true").option("inferSchema", "true").format("csv").load("weather.csv")
   //show schema
-  data.printSchema()
+  /*data.printSchema()
 
   val colnames = data.columns
   val firstrow = data.head(1)(0)
@@ -30,27 +30,36 @@ object Dataframe6 extends App{
     println(colnames(ind))
     println(firstrow(ind))
     println("\n")
+  }*/
+
+  def dateToLong(d:String): Long = {
+    val format = new java.text.SimpleDateFormat("M/dd/yyyy")
+    format.parse(d).getTime()
   }
 
   import sparkSession.implicits._
 
 
+  //val rflData = data.withColumn("RainfallDate", unix_timestamp(data("Date")))
 
-  /*  val logregDataAll = data.select($"RainTomorrow",
-      $"MinTemp",$"MaxTemp", $"Rainfall", $"Evaporation", $"Sunshine", $"WindGustDir", $"WindGustSpeed",
-      $"WindDir9am",$"WindDir3pm",$"WindSpeed9am", $"WindSpeed3pm", $"Humidity9am", $"Humidity3pm", $"Pressure9am", $"Pressure3pm",
-      $"Cloud9am",$"Cloud3pm",$"Temp9am", $"Temp3pm", $"RainToday", $"RISK_MM"
-    )*/
-
-  val rainfallData = data.withColumn("Date", unix_timestamp($"Date"))
-
-  val logregDataAll = rainfallData.select($"RainTomorrow",
-    $"Date",$"MinTemp",$"MaxTemp", $"Rainfall", $"Evaporation", $"Sunshine",$"WindGustSpeed",
-    $"WindSpeed9am", $"WindSpeed3pm", $"Humidity9am", $"Humidity3pm", $"Pressure9am", $"Pressure3pm",
+  val logregDataAll = data.select($"RainTomorrow",
+    $"MinTemp",$"MaxTemp", $"Rainfall", $"Evaporation", $"Sunshine",$"WindGustSpeed",
+    $"WindDir9am",$"WindDir3pm",$"WindSpeed9am", $"WindSpeed3pm", $"Humidity9am", $"Humidity3pm", $"Pressure9am", $"Pressure3pm",
     $"Cloud9am",$"Cloud3pm",$"Temp9am", $"Temp3pm",  $"RISK_MM"
   )
 
+  logregDataAll.printSchema()
 
+  val colnames = logregDataAll.columns
+  val firstrow = logregDataAll.head(1)(0)
+  println("\n")
+  println("Example Data Row")
+
+  for(ind <- Range(1, colnames.length)){
+    println(colnames(ind))
+    println(firstrow(ind))
+    println("\n")
+  }
 
   val logregData = logregDataAll.na.drop()
 
@@ -58,22 +67,12 @@ object Dataframe6 extends App{
   val rainTomorrowIndexer = new StringIndexer().setInputCol("RainTomorrow").setOutputCol("label")
   val rainTomorrowEncoder = new OneHotEncoder().setInputCol("label").setOutputCol("RainTomorrowVec")
 
-  /* val windGustDirIndexer = new StringIndexer().setInputCol("WindGustDir").setOutputCol("WindGustDirIndex")
-   val windGustDirEncoder = new OneHotEncoder().setInputCol("WindGustDirIndex").setOutputCol("WindGustDirVec")*/
-
-
-  val rainTodayIndexer = new StringIndexer().setInputCol("RainToday").setOutputCol("RainTodayIndex")
-  val rainTodayEncoder = new OneHotEncoder().setInputCol("RainTodayIndex").setOutputCol("RainTodayVec")
-
-  /* val windDir9amIndexer = new StringIndexer().setInputCol("WindDir9am").setOutputCol("WindDir9amIndex")
-   val windDir9amEncoder = new OneHotEncoder().setInputCol("WindDir9amIndex").setOutputCol("WindDir9amVec")
-
-   val windDir3pmIndexer = new StringIndexer().setInputCol("WindDir3pm").setOutputCol("WindDir3pmIndex")
-   val windDir3pmEncoder = new OneHotEncoder().setInputCol("WindDir3pmIndex").setOutputCol("WindDir3pmVec")*/
+  val dateIndexer = new StringIndexer().setInputCol("Date").setOutputCol("dateIndex")
+  val dateEncoder = new OneHotEncoder().setInputCol("dateIndex").setOutputCol("DateVec")
 
 
   val assembler = new VectorAssembler().
-    setInputCols(Array("Date","MinTemp","MaxTemp","Rainfall","Evaporation","Sunshine",
+    setInputCols(Array("MinTemp","MaxTemp","Rainfall","Evaporation","Sunshine",
       "WindGustSpeed","WindSpeed9am","WindSpeed3pm","Humidity9am","Humidity3pm","Pressure9am",
       "Pressure3pm","Cloud9am","Cloud3pm","Temp9am","Temp3pm","RISK_MM"))
     .setOutputCol("features")
@@ -81,6 +80,8 @@ object Dataframe6 extends App{
 
 
   val Array(training, test) = logregData.randomSplit(Array(0.7, 0.3), seed=12345)
+
+
 
   println ("training data count " + training.count)
   println ("test data count " + test.count)
@@ -92,13 +93,12 @@ object Dataframe6 extends App{
     .setMaxDepth(3)
     .setNumTrees(10)
 
-  /*  val pipeline = new Pipeline().setStages(Array(windGustDirIndexer,windDir9amIndexer,windDir3pmIndexer,rainTodayIndexer,
-      rainTomorrowIndexer,windGustDirEncoder,windDir9amEncoder,windDir3pmEncoder,rainTodayEncoder,rainTomorrowEncoder,assembler,rf))*/
-
   val pipeline = new Pipeline().setStages(Array(rainTomorrowIndexer, rainTomorrowEncoder,assembler,rf))
 
 
   val model = pipeline.fit(training)
+
+  model.write.overwrite().save("weatherModel");
 
   val predictions = model.transform(test)
 
@@ -130,7 +130,7 @@ object Dataframe6 extends App{
   val falsep = predictionAndLabels.filter($"prediction" === 1.0).filter(not($"label" === $"prediction")).count() / total.toDouble
   val falsen = predictionAndLabels.filter($"prediction" === 0.0).filter(not($"label" === $"prediction")).count() / total.toDouble
 
-  println("counttotal : " + total)
+  println("total : " + total)
   println("correct : " + correct)
   println("wrong: " + wrong)
   println("ratio wrong: " + ratioWrong)
@@ -140,5 +140,5 @@ object Dataframe6 extends App{
   println("ratio true negative : " + truen)
   println("ratio false negative : " + falsen)
 
-  sparkSession.stop()
+   sparkSession.stop()
 }
