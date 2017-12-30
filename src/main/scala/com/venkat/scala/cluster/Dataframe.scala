@@ -11,7 +11,7 @@ object Dataframe extends App{
   val sparkSession = SparkSession
     .builder()
     .master("local")
-    .appName("Dataframe6")
+    .appName("Dataframe")
     .getOrCreate()
 
   val dataSet = sparkSession.read.format("libsvm").load("sample_kmeans_data.txt")
