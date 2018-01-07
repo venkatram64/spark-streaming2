@@ -37,11 +37,58 @@ class MyUtils {
     println(s"$x + $y = ${x + y}")
   }
 
+  //format interpolation
+  def myPrintf():Unit = {
+    val speed = 1.2f
+    val name = "Venkatram"
+    println(f"$name%s can eat $speed%2.2f burgers per minute")
+    //%s string
+    //%2.2f float number format
+  }
 
+  //raw
+  def rawPrintf(): Unit = {
+    println(raw"Un-escaped: this is a \n newline")
+    val anEscapedStr = "This is a \n newline"
+    println(raw"Un-escaped: $anEscapedStr")
+  }
+
+  //call by value
+  /*
+  evaluate before entering the function
+  use the same value everywhere
+   */
+  def callByValue(x: Long) = {
+    println("By value :" + x) //x will be replace by 28389056590776
+    println("By value :" + x) //x will be replace by 28389056590776
+  }
+
+  //call by name
+  /*
+  passes expression without evaluation
+  recomputes the expression everywhere
+   */
+  def callByName(x: =>Long) = {
+    println("By name :" + x) //x will be replace by System.nanoTime()
+    println("By name :" + x)  //x will be replace by System.nanoTime()
+  }
+
+  def infinite: Int = 1 + infinite
+
+  def printFirst(x: Int, y: => Int) = println(x)
 
 }
 
 object MyUtils extends App{
   val myUtils = new MyUtils()
   println(myUtils.isPrime(7))
+
+  println("By value called")
+  myUtils.callByValue(System.nanoTime())
+  println("By name called")
+  myUtils.callByName(System.nanoTime())
+
+  //myUtils.printFirst(myUtils.infinite,2) //this will fail, due to infinite recursive call
+  myUtils.printFirst(2,myUtils.infinite)
+
 }
