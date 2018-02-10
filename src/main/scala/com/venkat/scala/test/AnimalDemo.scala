@@ -25,6 +25,8 @@ class Gazelle extends Animal {
 }
 
 class Cheetah extends Predator {
-  override def eat(other: Animal) = sayMyName + " Eating " + other.sayMyName
+  override def eat(other: Animal) = {
+    println(sayMyName + " Eating " + other.sayMyName)
+  }
   override def sayMyName = "Rawr!"
 }
