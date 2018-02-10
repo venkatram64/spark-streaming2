@@ -1,6 +1,6 @@
 package com.venkat.scala.cluster
 
-import org.apache.spark.ml.clustering.KMeans
+import org.apache.spark.ml.clustering.{KMeans, KMeansModel}
 import org.apache.spark.ml.feature.VectorAssembler
 import org.apache.spark.sql.SparkSession
 
@@ -33,6 +33,12 @@ object Dataframe2 extends App{
   val kmeans = new KMeans().setK(8)
 
   val model = kmeans.fit(trainingData)
+  /*
+  To predict save the model
+   */
+  model.write.overwrite.save("MyModelData")
+
+
 
   val wssse = model.computeCost((trainingData))
 
@@ -42,4 +48,6 @@ object Dataframe2 extends App{
   println("Cluster Centers: ")
   model.clusterCenters.foreach(println)
 
+  val predictionModel = KMeansModel.load("MyModelData")
+  //predictionModel.transform()
 }
