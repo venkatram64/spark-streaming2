@@ -49,7 +49,7 @@ class AlgoMatch {
       n match {
         case collection.immutable.Nil => theMax
         case head :: tail =>
-          val newMax = if(head > theMax) head else theMax
+          val newMax = if(head > theMax) head else theMax //ternary operator
           maxAccum(tail, newMax)
       }
     }
@@ -66,6 +66,25 @@ class AlgoMatch {
     }
     sumHelper(n, 0)
   }
+  /*
+
+  import scala.collection.JavaConversions.propertiesAsScalaMap
+
+  converts Java Properties to a scala map just to get an interesting example
+  for((k,v) <- System.getProperties())
+    println(k + "->" +v)
+
+  for each key, value pair in the map, k is bound to the key and v to the value.
+  In a for comprehension, match failure are silently ignored. For example, the following
+  loop prints all keys with empty value, skipping over all others
+  for((k,"") <- System.getProperties())
+    println(k)
+
+  you can also use guard. Note that the if goes after the <- symbol:
+
+  for((k, v) <- System.getProperties() if v == "")
+    println(k)
+   */
 
 }
 
