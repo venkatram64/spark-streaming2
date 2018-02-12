@@ -4,7 +4,6 @@ import scala.annotation.tailrec
 import collection.immutable.List._
 
 
-
 /**
   * Created by Venkatram on 2/10/2018.
   */
@@ -84,6 +83,11 @@ class AlgoMatch {
 
   for((k, v) <- System.getProperties() if v == "")
     println(k)
+   */
+
+  /*
+  var l = List(1,2,3)
+  l = l:+5 //adding to list
    */
 
 }
