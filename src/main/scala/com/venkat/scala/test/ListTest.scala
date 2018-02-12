@@ -5,17 +5,19 @@ case class Order(orderId: Int, orderDate: String, orderCustomerId: Int, orderSta
 
 object ListTest extends App{
 
+  def sortDesc(a: Int): Int = -a
+
   val os = collection.immutable.List(
-    Order(1,"2017-01-01",100,"NEW"),
+    Order(1,"2017-01-01",79,"NEW"),
     Order(2,"2017-02-02",101,"CLOSED"),
-    Order(3,"2017-02-03",102,"PENDING"),
+    Order(3,"2017-02-03",105,"PENDING"),
     Order(4,"2017-01-01",103,"COMPLETE"),
     Order(5,"2017-01-06",104,"CLOSED"),
     Order(6,"2017-01-21",105,"COMPLETE"),
     Order(7,"2017-01-11",10,"PENDING"),
     Order(8,"2017-01-17",60,"COMPLETE"),
     Order(9,"2017-01-19",80,"CLOSED"),
-    Order(10,"2017-01-11",20,"COMPLETE")
+    Order(10,"2017-01-11",105,"COMPLETE")
   )
 
   os.map(x => x.orderDate.replace("-", "").toInt).foreach(println)
@@ -27,5 +29,23 @@ object ListTest extends App{
 
   val result = (1 to 100).filter(_ % 2 == 0).reduce((a, b) => a + b)
   println(result)
+
+  val l = collection.immutable.List(2,0,7,3,-11,99,23,5,-17,1,4,9,12)
+  //println(l.sorted)
+  //l.sortBy(k => -k)
+  println(l.sortBy(k => sortDesc(k)))
+
+  os.sortWith((a,b) => {
+    if(a.orderCustomerId > b.orderCustomerId)
+      false
+    else if (a.orderCustomerId < b.orderCustomerId)
+      false
+    else {
+      if (a.orderId > b.orderId)
+        false
+      else
+        true
+    }
+  }).foreach(println)
 
 }
