@@ -47,5 +47,20 @@ object ListTest extends App{
         true
     }
   }).foreach(println)
+  println("**partition**")
+  val (closed, notClosed) =
+    os.partition(order => order.orderStatus == "CLOSED"
+      || order.orderStatus == "COMPLETE")
+  println("****")
+  closed.foreach(println)
+  println("****")
+  notClosed.foreach(println)
+  println("***par***")
+  val (closed2, notClosed2) =
+    os.par.partition(order => order.orderStatus == "CLOSED"
+      || order.orderStatus == "COMPLETE")
 
+  closed2.foreach(println)
+  println("****")
+  notClosed2.foreach(println)
 }
