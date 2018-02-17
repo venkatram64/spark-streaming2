@@ -1,5 +1,7 @@
 package com.venkat.scala.test
 
+//https://www.youtube.com/watch?v=bmfTyUKbETg&index=27&list=PLf0swTFhTI8rv85gSUEyBxN6fdv5D2E0C
+
 case class Order2(orderId: Int, orderDate: String, orderCustomerId: Int, orderStatus: String)
 
 object SetTest extends App{
